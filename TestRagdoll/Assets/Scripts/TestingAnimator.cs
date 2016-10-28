@@ -26,23 +26,6 @@ public class TestingAnimator : MonoBehaviour
 }
 
 /*
-    private Rigidbody2D rbody;
-    private Vector3 ogCOM;
-    public bool doTest;
-   // Use this for initialization
-    void Start()
-    {
-        rbody = GetComponent<Rigidbody2D>();
-        ogCOM = rbody.centerOfMass;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(doTest)
-        {
-            rbody.centerOfMass = ogCOM;
-        }
-    }
 
 */

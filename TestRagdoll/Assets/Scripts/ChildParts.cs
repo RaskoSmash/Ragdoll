@@ -4,11 +4,8 @@ using System.Collections;
 public class ChildParts : MonoBehaviour
 {
     public Transform originalT;
-
     public Rigidbody2D rbody;
-
     new public Collider2D collider;
-
     public HingeJoint2D hinge;
 
     public bool checkForHinge;
@@ -28,7 +25,18 @@ public class ChildParts : MonoBehaviour
         originalT = transform;
         if(checkForRigidbody)
         {
-            
+            if (rbody == null)
+                gameObject.AddComponent<Rigidbody2D>();
+        }
+        if (checkForCollider)
+        {
+            if (collider == null)
+                gameObject.AddComponent<Collider2D>();
+        }
+        if (checkForHinge)
+        {
+            if (hinge == null)
+                gameObject.AddComponent<HingeJoint2D>();
         }
     }
 }
