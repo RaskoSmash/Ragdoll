@@ -24,26 +24,11 @@ public class RagdollPhysics : MonoBehaviour
         
         if (isRagdolling && !wasRagdolling)
         {
-            foreach (ChildParts ot in parts)
-            {
-
-            }
-
-            collider.enabled = false;
-            wasRagdolling = true;
-            anim.enabled = false;
+            duringRagdoll();
         }
         else if (!isRagdolling && wasRagdolling)
         {
-            foreach (ChildParts ot in parts)
-            {
-                ot.transform.position = ot.originalT.position;
-                ot.rbody.isKinematic = true;
-                ot.collider.enabled = false;
-                ot.enabled = false;
-            }
-            //wasRagdolling = false;
-            //anim.enabled = true;
+            afterRagdoll();
         }
     }
 
@@ -67,21 +52,54 @@ public class RagdollPhysics : MonoBehaviour
             if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && child.transform.parent != null)
             {
                 child.gameObject.AddComponent<ChildParts>();
+                child.GetComponent<ChildParts>().enabled = false;
             }
         }
     }
 
-    void setChildChecks(bool h, bool rb, bool c) //rb: rigidbody, c: collider, h: hinges
+    void setChildChecks(ChildParts cp, bool h, bool rb, bool c) //rb: rigidbody, c: collider, h: hinges
     {
-        foreach(ChildParts cp in parts)
+        cp.checkForHinge = h;
+        cp.checkForRigidbody = rb;
+        cp.checkForCollider = c;
+    }
+
+    void duringRagdoll()
+    {
+        foreach (ChildParts ot in parts)
         {
-            cp.checkForHinge = h;
-            cp.checkForRigidbody = rb;
-            cp.checkForCollider = c;
+            setChildChecks(ot, true, true, true);
+            ot.enabled = true;
+            if(ot.transform.parent.GetComponent<RagdollPhysics>() != null)
+            {
+                ot.hinge.connectedAnchor = new Vector2(transform.position.x, transform.position.y);
+            }
+            else
+            {
+                
+            }
         }
+        collider.enabled = false;
+        wasRagdolling = true;
+        anim.enabled = false;
+    }
+
+    void afterRagdoll()
+    {
+        foreach (ChildParts ot in parts)
+        {
+            ot.enabled = false;
+            ot.transform.position = ot.originalT.position;
+            //ot.rbody.isKinematic = true;
+        }
+        wasRagdolling = false;
+        anim.enabled = true;
     }
 }
 
+//automate child's components []
+//proper hinge angular limitations []
+//proper resetting after the ragdoll []
 //one universal box collider during !isRagdolling
 
 /*

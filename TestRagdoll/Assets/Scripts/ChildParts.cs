@@ -5,7 +5,7 @@ public class ChildParts : MonoBehaviour
 {
     public Transform originalT;
     public Rigidbody2D rbody;
-    new public Collider2D collider;
+    new public BoxCollider2D collider;
     public HingeJoint2D hinge;
 
     public bool checkForHinge;
@@ -17,26 +17,39 @@ public class ChildParts : MonoBehaviour
         originalT = transform;
         hinge = GetComponent<HingeJoint2D>();
         rbody = GetComponent<Rigidbody2D>();
-        collider = GetComponent<Collider2D>();
+        collider = GetComponent<BoxCollider2D>();
     }
 
     void OnEnable()
     {
         originalT = transform;
-        if(checkForRigidbody)
+        if (checkForRigidbody)
         {
+            rbody = GetComponent<Rigidbody2D>();
             if (rbody == null)
                 gameObject.AddComponent<Rigidbody2D>();
         }
         if (checkForCollider)
         {
+            collider = GetComponent<BoxCollider2D>();
             if (collider == null)
-                gameObject.AddComponent<Collider2D>();
+                gameObject.AddComponent<BoxCollider2D>();
         }
         if (checkForHinge)
         {
+            hinge = GetComponent<HingeJoint2D>();
             if (hinge == null)
                 gameObject.AddComponent<HingeJoint2D>();
         }
+        checkForHinge = false;
+        checkForCollider = false;
+        checkForRigidbody = false;
+    }
+
+    void onDisable()
+    {
+        Destroy(rbody);
+        Destroy(hinge);
+        Destroy(collider);
     }
 }
