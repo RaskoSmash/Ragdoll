@@ -21,7 +21,6 @@ public class RagdollPhysics : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(parts.Count);
         if (isRagdolling && !wasRagdolling)
         {
             duringRagdoll();
@@ -52,14 +51,13 @@ public class RagdollPhysics : MonoBehaviour
             if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && child.transform.parent != null)
             {
                 child.gameObject.AddComponent<ChildParts>();
-                child.GetComponent<ChildParts>().enabled = false;
             }
         }
     }
 
-    void setChildChecks(ChildParts cp, bool h, bool rb, bool c) //rb: rigidbody, c: collider, h: hinges
+    void setChildChecks(ChildParts cp, bool d, bool rb, bool c) //rb: rigidbody, c: collider, d: distancejoint
     {
-        cp.checkForHinge = h;
+        cp.checkForDist = d;
         cp.checkForRigidbody = rb;
         cp.checkForCollider = c;
     }
@@ -68,11 +66,9 @@ public class RagdollPhysics : MonoBehaviour
     {
         foreach (ChildParts ot in parts)
         {
-            setChildChecks(ot, false, true, true);
-            ot.enabled = true;
-            
+            setChildChecks(ot, true, true, true);
+            ot.SetEnabled(true);
         }
-        //collider.enabled = false;
         wasRagdolling = true;
         anim.enabled = false;
     }
@@ -81,24 +77,12 @@ public class RagdollPhysics : MonoBehaviour
     {
         foreach (ChildParts ot in parts)
         {
-            ot.enabled = false;
+            ot.SetEnabled(false);
             ot.transform.position = ot.originalT.position;
             //ot.rbody.isKinematic = true;
         }
         wasRagdolling = false;
         //anim.enabled = true;
-    }
-
-    void doJoint(ChildParts ot)
-    {
-        if (ot.transform.parent.GetComponent<RagdollPhysics>() != null)
-        {
-            ot.dist.connectedAnchor = new Vector2(transform.position.x, transform.position.y);
-        }
-        else
-        {
-
-        }
     }
 }
 

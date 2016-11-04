@@ -8,7 +8,7 @@ public class ChildParts : MonoBehaviour
     new public BoxCollider2D collider;
     public DistanceJoint2D dist;
 
-    public bool checkForHinge;
+    public bool checkForDist;
     public bool checkForRigidbody;
     public bool checkForCollider;
 
@@ -20,41 +20,50 @@ public class ChildParts : MonoBehaviour
         collider = GetComponent<BoxCollider2D>();
     }
 
-    void OnEnable()
+    public void SetEnabled(bool isActive)
     {
-        originalT = transform;
-        if (checkForRigidbody)
+        if(isActive)
         {
-            rbody = GetComponent<Rigidbody2D>();
-            if (rbody == null)
-                gameObject.AddComponent<Rigidbody2D>();
-        }
-        if (checkForCollider)
-        {
-            collider = GetComponent<BoxCollider2D>();
-            if (collider == null)
+            originalT = transform;
+            if (checkForRigidbody)
             {
-                gameObject.AddComponent<BoxCollider2D>();
-                Debug.Log("Added box collider");
+                rbody = GetComponent<Rigidbody2D>();
+                if (rbody == null)
+                    rbody = gameObject.AddComponent<Rigidbody2D>();
+            }
+            if (checkForCollider)
+            {
+                collider = GetComponent<BoxCollider2D>();
+                if (collider == null)
+                {
+                    collider = gameObject.AddComponent<BoxCollider2D>();
+                    Debug.Log("Added box collider");
+                }
+            }
+            if (checkForDist)
+            {
+                dist = GetComponent<DistanceJoint2D>();
+                if (dist == null)
+                    dist = gameObject.AddComponent<DistanceJoint2D>();
+            }
+            if (transform.parent.GetComponent<RagdollPhysics>() != null)
+            {
+                dist.connectedAnchor = transform.parent.position;
+            }
+            else
+            {
+                dist.connectedBody = dist.transform.parent.GetComponent<Rigidbody2D>();
             }
         }
-        if (checkForHinge)
+        else
         {
-            dist = GetComponent<DistanceJoint2D>();
-            if (dist == null)
-                gameObject.AddComponent<DistanceJoint2D>();
+            Destroy(dist);
+            Destroy(rbody);
+            Destroy(collider);
+            checkForDist = false;
+            checkForCollider = false;
+            checkForRigidbody = false;
         }
-        checkForHinge = false;
-        checkForCollider = false;
-        checkForRigidbody = false;
-    }
-
-    void OnDisable()
-    {
-        Destroy(dist);
-        Destroy(rbody);
-        Destroy(collider);
-
     }
 
     //void OnCollisionEnter2D(Collision2D col)
