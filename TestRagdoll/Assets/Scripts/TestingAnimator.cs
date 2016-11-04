@@ -16,12 +16,17 @@ public class TestingAnimator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("e") || Input.GetKey("e"))
+        if (Input.GetKey("e") && rag.isRagdolling == true)
+        {
+            rag.isRagdolling = false;
+            Debug.Log("false");
+        }
+        else if ((Input.GetKey("e")) && rag.isRagdolling == false)
         {
             rag.isRagdolling = true;
+            Debug.Log("true");
         }
-        else
-            rag.isRagdolling = false;
+        
     }
 }
 

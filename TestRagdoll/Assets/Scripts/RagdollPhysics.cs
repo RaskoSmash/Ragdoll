@@ -21,7 +21,7 @@ public class RagdollPhysics : MonoBehaviour
 
     void Update()
     {
-        
+        Debug.Log(parts.Count);
         if (isRagdolling && !wasRagdolling)
         {
             duringRagdoll();
@@ -68,18 +68,11 @@ public class RagdollPhysics : MonoBehaviour
     {
         foreach (ChildParts ot in parts)
         {
-            setChildChecks(ot, true, true, true);
+            setChildChecks(ot, false, true, true);
             ot.enabled = true;
-            if(ot.transform.parent.GetComponent<RagdollPhysics>() != null)
-            {
-                ot.hinge.connectedAnchor = new Vector2(transform.position.x, transform.position.y);
-            }
-            else
-            {
-                
-            }
+            
         }
-        collider.enabled = false;
+        //collider.enabled = false;
         wasRagdolling = true;
         anim.enabled = false;
     }
@@ -93,7 +86,19 @@ public class RagdollPhysics : MonoBehaviour
             //ot.rbody.isKinematic = true;
         }
         wasRagdolling = false;
-        anim.enabled = true;
+        //anim.enabled = true;
+    }
+
+    void doJoint(ChildParts ot)
+    {
+        if (ot.transform.parent.GetComponent<RagdollPhysics>() != null)
+        {
+            ot.dist.connectedAnchor = new Vector2(transform.position.x, transform.position.y);
+        }
+        else
+        {
+
+        }
     }
 }
 
