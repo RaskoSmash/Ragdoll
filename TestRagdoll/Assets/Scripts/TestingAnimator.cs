@@ -24,7 +24,6 @@ public class TestingAnimator : MonoBehaviour
         {
             rag.isRagdolling = true;
         }
-            Debug.Log(rag.isRagdolling);
         
     }
 }

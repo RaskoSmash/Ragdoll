@@ -1,5 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
+
+// map<Transform, TransformData> originalTrans;
+// originalTrans[trans].Apply(trans);
+
+public class TransformData
+{
+    Vector3 pos;
+    Quaternion rot;
+    Vector3 scale;
+
+    public TransformData(Transform target)
+    {
+        // record da dada
+    }
+
+    public void Apply(Transform target)
+    {
+        // change da dada
+    }
+}
 
 public class RagdollPhysics : MonoBehaviour
 {
@@ -71,6 +92,7 @@ public class RagdollPhysics : MonoBehaviour
         }
         wasRagdolling = true;
         anim.enabled = false;
+        //anim.applyRootMotion = false;
     }
 
     void afterRagdoll()
@@ -82,13 +104,51 @@ public class RagdollPhysics : MonoBehaviour
             //ot.rbody.isKinematic = true;
         }
         wasRagdolling = false;
-        //anim.enabled = true;
+        anim.enabled = true;
+        anim.applyRootMotion = false;
+        Debug.Log("false");
+        StartCoroutine(WaitForRoot());
+    }
+
+    //IEnumerator WaitForRoot() {
+    //    Debug.Log("wait");
+    //    yield return new WaitForEndOfFrame();
+    //}
+
+    IEnumerator WaitForRoot()
+    {
+        
+
+        for (int i = 0; i < 2; i++)
+        {
+            yield return null;
+        }
+
+        yield return new WaitForFixedUpdate();
+
+        //Debug.Log("true");
+        anim.enabled = true;
+        //anim.applyRootMotion = false;
+
+        Debug.Log(anim.hasRootMotion);
+
+        anim.applyRootMotion = true;
+
+        Debug.Log(anim.hasRootMotion);
+
+        //anim.StopPlayback();
+        anim.StartPlayback();
+        anim.speed = 1;
+
+        anim.SetTrigger("Reset");
+
     }
 }
 
 //automate child's components []
 //proper hinge angular limitations []
 //proper resetting after the ragdoll []
+//use the planet's normal to find the up( transform.position - closestplanet.transform.position)
 //one universal box collider during !isRagdolling
 
 /*
