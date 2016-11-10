@@ -6,8 +6,9 @@ public class ChildParts : MonoBehaviour
     public Transform originalT;
     public Rigidbody2D rbody;
     new public BoxCollider2D collider;
-    public RelativeJoint2D dist;
+    public HingeJoint2D dist;
 
+    private bool haveDist;
     public bool checkForDist;
     public bool checkForRigidbody;
     public bool checkForCollider;
@@ -15,7 +16,7 @@ public class ChildParts : MonoBehaviour
     void Start()
     {
         originalT = transform;
-        dist = GetComponent<RelativeJoint2D>();
+        dist = GetComponent<HingeJoint2D>();
         rbody = GetComponent<Rigidbody2D>();
         collider = GetComponent<BoxCollider2D>();
     }
@@ -24,6 +25,7 @@ public class ChildParts : MonoBehaviour
     {
         if(isActive)
         {
+            haveDist = transform.parent.GetComponent<RagdollPhysics>() == null;
             originalT = transform;
             if (checkForRigidbody)
             {
@@ -39,32 +41,45 @@ public class ChildParts : MonoBehaviour
                     collider = gameObject.AddComponent<BoxCollider2D>();
                 }
             }
-            if (checkForDist)
+            if (checkForDist && haveDist)
             {
-                dist = GetComponent<RelativeJoint2D>();
+                dist = GetComponent<HingeJoint2D>();
                 if (dist == null)
-                    dist = gameObject.AddComponent<RelativeJoint2D>();
+                    dist = gameObject.AddComponent<HingeJoint2D>();
             }
-            if (transform.parent.GetComponent<RagdollPhysics>() != null)
-            {
-                dist.connectedBody = transform.parent.GetComponent<Rigidbody2D>();
-            }
-            else
+            if (haveDist)
             {
                 dist.connectedBody = dist.transform.parent.GetComponent<Rigidbody2D>();
+                dist.enabled = true;
+                dist.connectedAnchor = calParentAnchor();
             }
+            collider.enabled = true;
+            rbody.isKinematic = false;
         }
         else
         {
-            Destroy(dist);
-            Destroy(rbody);
-            Destroy(collider);
+            if(haveDist)
+                dist.enabled = false;
+
+            collider.enabled = false;
+            rbody.isKinematic = true;
+            
             checkForDist = false;
             checkForCollider = false;
             checkForRigidbody = false;
         }
     }
 
+    Vector2 calParentAnchor()
+    {
+        Vector2 retVal = Vector2.zero;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, (transform.position - transform.parent.position).normalized);
+        //Vector3 temp = Transform.InverseTransformPoint(new Vector3(hit.point.x,hit.point.y,0));
+        //retVal = 
+        return retVal;
+    }
+
+}
     //void OnCollisionEnter2D(Collision2D col)
     //{
     //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
@@ -141,4 +156,3 @@ public class ChildParts : MonoBehaviour
             checkForRigidbody = false;
         }
     }*/
-}

@@ -69,7 +69,8 @@ public class RagdollPhysics : MonoBehaviour
         Transform[] children = GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
-            if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && child.transform.parent != null)
+            if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && 
+                child.transform.parent != null)
             {
                 child.gameObject.AddComponent<ChildParts>();
             }
@@ -117,8 +118,6 @@ public class RagdollPhysics : MonoBehaviour
 
     IEnumerator WaitForRoot()
     {
-        
-
         for (int i = 0; i < 2; i++)
         {
             yield return null;
@@ -143,7 +142,13 @@ public class RagdollPhysics : MonoBehaviour
         anim.SetTrigger("Reset");
 
     }
+
+    
 }
+
+//I can calculate the closest position based on my parent's pivot
+//convert into local space and apply it to my hingejoint's connected anchor
+
 
 //automate child's components []
 //proper hinge angular limitations []
