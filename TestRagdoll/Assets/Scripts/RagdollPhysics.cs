@@ -5,22 +5,7 @@ using System.Collections;
 // map<Transform, TransformData> originalTrans;
 // originalTrans[trans].Apply(trans);
 
-public class TransformData
-{
-    Vector3 pos;
-    Quaternion rot;
-    Vector3 scale;
 
-    public TransformData(Transform target)
-    {
-        // record da dada
-    }
-
-    public void Apply(Transform target)
-    {
-        // change da dada
-    }
-}
 
 public class RagdollPhysics : MonoBehaviour
 {
@@ -54,13 +39,18 @@ public class RagdollPhysics : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.CompareTag("Player") && !isRagdolling)
+    //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
+    //    {
+    //        Physics2D.IgnoreCollision(collider, col.collider);
+    //    }
+    //    else if (col.gameObject.CompareTag("Player") && isRagdolling)
+    //    {
+    //        Physics2D.IgnoreCollision(collider, col.collider, false);
+    //    }
+
+        if(col.gameObject.CompareTag("Player"))
         {
             Physics2D.IgnoreCollision(collider, col.collider);
-        }
-        else if (col.gameObject.CompareTag("Player") && isRagdolling)
-        {
-            Physics2D.IgnoreCollision(collider, col.collider, false);
         }
     }
 
@@ -93,7 +83,6 @@ public class RagdollPhysics : MonoBehaviour
         }
         wasRagdolling = true;
         anim.enabled = false;
-        //anim.applyRootMotion = false;
     }
 
     void afterRagdoll()
@@ -102,12 +91,10 @@ public class RagdollPhysics : MonoBehaviour
         {
             ot.SetEnabled(false);
             ot.transform.position = ot.originalT.position;
-            //ot.rbody.isKinematic = true;
         }
         wasRagdolling = false;
         anim.enabled = true;
         anim.applyRootMotion = false;
-        Debug.Log("false");
         StartCoroutine(WaitForRoot());
     }
 
@@ -124,37 +111,24 @@ public class RagdollPhysics : MonoBehaviour
         }
 
         yield return new WaitForFixedUpdate();
-
-        //Debug.Log("true");
         anim.enabled = true;
-        //anim.applyRootMotion = false;
-
-        Debug.Log(anim.hasRootMotion);
-
         anim.applyRootMotion = true;
-
-        Debug.Log(anim.hasRootMotion);
-
-        //anim.StopPlayback();
         anim.StartPlayback();
         anim.speed = 1;
 
         anim.SetTrigger("Reset");
-
     }
 
     
 }
-
-//I can calculate the closest position based on my parent's pivot
-//convert into local space and apply it to my hingejoint's connected anchor
-
-
-//automate child's components []
+//BUGS{
+//collide with parented boxcollider while in rag [fixed]
+//revert needs a desired rot,scale,pos to blend to after ragdoll []
 //proper hinge angular limitations []
-//proper resetting after the ragdoll []
-//use the planet's normal to find the up( transform.position - closestplanet.transform.position)
-//one universal box collider during !isRagdolling
+//use the planet's normal to find the up( transform.position - closestplanet.transform.position) []
+//
+//
+//}
 
 /*
  bool isActive
@@ -170,61 +144,6 @@ public class RagdollPhysics : MonoBehaviour
 	addHinges
 	hingeJoint 2D
 
-        private List<ChildParts> parts;
-    public bool isRagdolling;
-    public bool wasRagdolling;
-    private Animator anim;
-    new public Collider2D collider;
-
-    void Start()
-    {
-        parts = new List<ChildParts>(GetComponentsInChildren<ChildParts>());
-        anim = GetComponent<Animator>();
-        wasRagdolling = false;
-        collider = GetComponent<Collider2D>();
-    }
-
-    void Update()
-    {
-        if (isRagdolling && !wasRagdolling)
-        {
-            foreach (ChildParts ot in parts)
-            {
-                ot.enabled = true;
-                ot.rbody.isKinematic = false;
-                ot.collider.enabled = true;
-            }
-            Collider2D playerBox = GetComponentInParent<Collider2D>();
-            playerBox.enabled = false;
-            wasRagdolling = true;
-            anim.enabled = false;
-        }
-        else if (!isRagdolling && wasRagdolling)
-        {
-            foreach (ChildParts ot in parts)
-            {
-                ot.transform.position = ot.originalT.position;
-                ot.rbody.isKinematic = true;
-                ot.collider.enabled = false;
-                ot.enabled = false;
-            }
-            wasRagdolling = false;
-            anim.enabled = true;
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if(col.gameObject.CompareTag("Player") && !isRagdolling)
-        {
-            Physics2D.IgnoreCollision(collider, col.collider);
-        }
-        else if(col.gameObject.CompareTag("Player") && isRagdolling)
-        {
-            Physics2D.IgnoreCollision(collider, col.collider, false);
-        }
-    }
-
-     */
+*/
 
 
