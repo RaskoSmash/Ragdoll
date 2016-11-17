@@ -16,6 +16,7 @@ public class TestingAnimator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (Input.GetKey("q") && rag.isRagdolling == true)
         {
             rag.isRagdolling = false;

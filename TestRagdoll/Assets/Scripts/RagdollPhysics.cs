@@ -14,7 +14,7 @@ public class RagdollPhysics : MonoBehaviour
     public bool wasRagdolling;
     private Animator anim;
     new private Collider2D collider;
-
+    private Vector2 forceWhenStartRag;
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -29,7 +29,7 @@ public class RagdollPhysics : MonoBehaviour
     {
         if (isRagdolling && !wasRagdolling)
         {
-            duringRagdoll();
+            startRagdoll();
         }
         else if (!isRagdolling && wasRagdolling)
         {
@@ -39,16 +39,16 @@ public class RagdollPhysics : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-    //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
-    //    {
-    //        Physics2D.IgnoreCollision(collider, col.collider);
-    //    }
-    //    else if (col.gameObject.CompareTag("Player") && isRagdolling)
-    //    {
-    //        Physics2D.IgnoreCollision(collider, col.collider, false);
-    //    }
-
-        if(col.gameObject.CompareTag("Player"))
+        //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
+        //    {
+        //        Physics2D.IgnoreCollision(collider, col.collider);
+        //    }
+        //    else if (col.gameObject.CompareTag("Player") && isRagdolling)
+        //    {
+        //        Physics2D.IgnoreCollision(collider, col.collider, false);
+        //    }
+        //I need a way to still collide with self but not the master parent
+        if (col.gameObject.CompareTag("Player")) 
         {
             Physics2D.IgnoreCollision(collider, col.collider);
         }
@@ -74,7 +74,7 @@ public class RagdollPhysics : MonoBehaviour
         cp.checkForCollider = c;
     }
 
-    void duringRagdoll()
+    void startRagdoll()
     {
         foreach (ChildParts ot in parts)
         {
@@ -93,7 +93,7 @@ public class RagdollPhysics : MonoBehaviour
             ot.transform.position = ot.originalT.position;
         }
         wasRagdolling = false;
-        anim.enabled = true;
+        anim.enabled = false;
         anim.applyRootMotion = false;
         StartCoroutine(WaitForRoot());
     }
@@ -124,8 +124,11 @@ public class RagdollPhysics : MonoBehaviour
 //BUGS{
 //collide with parented boxcollider while in rag [fixed]
 //revert needs a desired rot,scale,pos to blend to after ragdoll []
+
 //proper hinge angular limitations []
 //use the planet's normal to find the up( transform.position - closestplanet.transform.position) []
+//old model works "YAY"
+
 //
 //
 //}

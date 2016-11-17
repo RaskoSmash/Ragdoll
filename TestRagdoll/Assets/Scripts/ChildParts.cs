@@ -120,14 +120,20 @@ public class TransformData
     Quaternion desiredRot;
     Vector3 desiredScale;
 
-    public TransformData(Transform target)
+    public TransformData(Transform current)
     {
         // record da dada
+        desiredPos = current.localPosition;
+        desiredRot = current.localRotation;
+        desiredScale = current.localScale;
     }
 
-    public void Apply(Transform target)
+    //how do i handle lerp if this only gets called once
+        //maybe coroutines
+    public void Apply(Transform current)
     {
         // change da dada
+        current.localRotation = Quaternion.Lerp(current.localRotation, desiredRot,.01f);
     }
 }
 
@@ -137,6 +143,7 @@ public class ChildParts : MonoBehaviour
     public Rigidbody2D rbody;
     new public BoxCollider2D collider;
     public HingeJoint2D dist;
+    private TransformData tdata;
 
     private bool haveDist;
     public bool checkForDist;
@@ -145,7 +152,6 @@ public class ChildParts : MonoBehaviour
 
     void Start()
     {
-        originalT = transform;
         dist = GetComponent<HingeJoint2D>();
         rbody = GetComponent<Rigidbody2D>();
         collider = GetComponent<BoxCollider2D>();
@@ -156,7 +162,7 @@ public class ChildParts : MonoBehaviour
         if (isActive)
         {
             haveDist = transform.parent.GetComponent<RagdollPhysics>() == null;
-            originalT = transform;
+            tdata = new TransformData(transform);
             if (checkForRigidbody)
             {
                 rbody = GetComponent<Rigidbody2D>();
@@ -197,6 +203,7 @@ public class ChildParts : MonoBehaviour
             checkForDist = false;
             checkForCollider = false;
             checkForRigidbody = false;
+            tdata.Apply(transform);
         }
     }
 
