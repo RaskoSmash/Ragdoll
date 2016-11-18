@@ -142,15 +142,15 @@ public class TransformData
 public class ChildParts : MonoBehaviour
 {
     public bool isColObj;
-    public Rigidbody2D rbody;
-    new public BoxCollider2D collider;
-    public HingeJoint2D dist;
+    private Rigidbody2D rbody;
+    new private BoxCollider2D collider;
+    private HingeJoint2D dist;
     private TransformData tdata;
     public FollowTarget followTarget;
-    public Quaternion OriginalRot;
-    public float yRotOffset;
+    private Quaternion OriginalRot;
 
     private bool haveDist;
+    [HideInInspector]
     public bool checkForDist;
     public bool checkForRigidbody;
     public bool checkForCollider;
@@ -162,7 +162,6 @@ public class ChildParts : MonoBehaviour
         collider = GetComponent<BoxCollider2D>();
         followTarget = GetComponent<FollowTarget>();
         OriginalRot = transform.localRotation;
-        yRotOffset = Mathf.DeltaAngle(0, transform.rotation.y);
     }
 
     void OnCollisionEnter2D(Collision2D col)

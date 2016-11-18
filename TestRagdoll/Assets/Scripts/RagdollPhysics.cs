@@ -11,7 +11,7 @@ public class RagdollPhysics : MonoBehaviour
 {
     private List<ChildParts> parts;
     public bool isRagdolling;
-    public bool wasRagdolling;
+    private bool wasRagdolling;
     private Animator anim;
     private Vector2 forceWhenStartRag;
     void Start()
