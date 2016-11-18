@@ -1,0 +1,21 @@
+VS and Unity not working.
+
+[ChildParts]
+if empty collision obj
+	attach a rb when in rag & destroy when done
+
+else	
+	normal set to kinematic 
+
+Apply
+{
+	desiredPos = Vector3.Lerp(transform.position, target.position)
+	dScale = target.localscale
+}
+
+[Follow model(change name to follow target)]
+public transform target
+set up like the isActive function in child parts(transform target)
+{
+	set location to the target position/rotation
+}
