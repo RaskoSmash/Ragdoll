@@ -37,30 +37,13 @@ public class RagdollPhysics : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
-        //    {
-        //        Physics2D.IgnoreCollision(collider, col.collider);
-        //    }
-        //    else if (col.gameObject.CompareTag("Player") && isRagdolling)
-        //    {
-        //        Physics2D.IgnoreCollision(collider, col.collider, false);
-        //    }
-        //I need a way to still collide with self but not the master parent
-        if (col.gameObject.CompareTag("Player")) 
-        {
-            Physics2D.IgnoreCollision(collider, col.collider);
-        }
-    }
-
     void addChildParts()
     {
         Transform[] children = GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
             if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && 
-                child.transform.parent != null)
+                child.transform.parent != null && child.GetComponent<FollowModel>() != null)
             {
                 child.gameObject.AddComponent<ChildParts>();
             }
@@ -78,7 +61,7 @@ public class RagdollPhysics : MonoBehaviour
     {
         foreach (ChildParts ot in parts)
         {
-            setChildChecks(ot, true, true, true);
+            setChildChecks(ot, false, true, true);
             ot.SetEnabled(true);
         }
         wasRagdolling = true;
@@ -124,12 +107,11 @@ public class RagdollPhysics : MonoBehaviour
 //BUGS{
 //collide with parented boxcollider while in rag [fixed]
 //revert needs a desired rot,scale,pos to blend to after ragdoll []
-
+//Hinge not behaving correctly []
 //proper hinge angular limitations []
 //use the planet's normal to find the up( transform.position - closestplanet.transform.position) []
-//old model works "YAY"
-
-//
+//old model works "YAY", no it doesnt. 
+//Use script to have model follow box col obj when in rag doll and reverse when it aint ragdolling
 //
 //}
 

@@ -129,7 +129,7 @@ public class TransformData
     }
 
     //how do i handle lerp if this only gets called once
-        //maybe coroutines
+        //lerp should just work
     public void Apply(Transform current)
     {
         // change da dada
@@ -157,6 +157,24 @@ public class ChildParts : MonoBehaviour
         collider = GetComponent<BoxCollider2D>();
     }
 
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        //    if (col.gameObject.CompareTag("Player") && !isRagdolling)
+        //    {
+        //        Physics2D.IgnoreCollision(collider, col.collider);
+        //    }
+        //    else if (col.gameObject.CompareTag("Player") && isRagdolling)
+        //    {
+        //        Physics2D.IgnoreCollision(collider, col.collider, false);
+        //    }
+        //I need a way to still collide with self but not the master parent
+        if (col.gameObject.CompareTag("Player"))
+        {
+            Debug.Log(col.gameObject.name);
+            Physics2D.IgnoreCollision(collider, col.collider);
+        }
+    }
+
     public void SetEnabled(bool isActive)
     {
         if (isActive)
@@ -169,12 +187,6 @@ public class ChildParts : MonoBehaviour
                 if (rbody == null)
                     rbody = gameObject.AddComponent<Rigidbody2D>();
             }
-            if (checkForCollider)
-            {
-                collider = GetComponent<BoxCollider2D>();
-                if (collider == null)
-                    collider = gameObject.AddComponent<BoxCollider2D>();
-            }
             if (checkForDist && haveDist)
             {
                 dist = GetComponent<HingeJoint2D>();
@@ -185,17 +197,17 @@ public class ChildParts : MonoBehaviour
                     dist.connectedAnchor = transform.localPosition;
                 }
             }
-            if (haveDist)
-            {
-                dist.enabled = true;
-            }
+            //if (haveDist)
+            //{
+            //    dist.enabled = true;
+            //}
             collider.enabled = true;
             rbody.isKinematic = false;
         }
         else
         {
-            if (haveDist)
-                dist.enabled = false;
+            //if (haveDist)
+            //    dist.enabled = false;
 
             collider.enabled = false;
             rbody.isKinematic = true;
