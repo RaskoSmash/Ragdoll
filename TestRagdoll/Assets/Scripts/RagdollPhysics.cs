@@ -13,13 +13,11 @@ public class RagdollPhysics : MonoBehaviour
     public bool isRagdolling;
     public bool wasRagdolling;
     private Animator anim;
-    new private Collider2D collider;
     private Vector2 forceWhenStartRag;
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
         wasRagdolling = false;
-        collider = GetComponent<Collider2D>();
         addChildParts();
 
         parts = new List<ChildParts>(GetComponentsInChildren<ChildParts>());
@@ -31,9 +29,17 @@ public class RagdollPhysics : MonoBehaviour
         {
             startRagdoll();
         }
+        else if(isRagdolling && wasRagdolling)
+        {
+            duringRagdoll();
+        }
         else if (!isRagdolling && wasRagdolling)
         {
             afterRagdoll();
+        }
+        else
+        {
+            notRagdoll();
         }
     }
 
@@ -43,7 +49,7 @@ public class RagdollPhysics : MonoBehaviour
         foreach (Transform child in children)
         {
             if (child.CompareTag("Player") && child.GetComponent<ChildParts>() == null && 
-                child.transform.parent != null && child.GetComponent<FollowModel>() != null)
+                child.transform.parent != null && child.GetComponent<FollowTarget>() != null)
             {
                 child.gameObject.AddComponent<ChildParts>();
             }
@@ -68,17 +74,40 @@ public class RagdollPhysics : MonoBehaviour
         anim.enabled = false;
     }
 
+    void duringRagdoll()
+    {
+        foreach (ChildParts ot in parts)
+        {
+            if (!ot.followTarget.isColObj)
+            {
+                ot.followTarget.snapToTarget();
+            }
+        }
+    }
+
     void afterRagdoll()
     {
         foreach (ChildParts ot in parts)
         {
             ot.SetEnabled(false);
-            ot.transform.position = ot.originalT.position;
         }
         wasRagdolling = false;
         anim.enabled = false;
         anim.applyRootMotion = false;
         StartCoroutine(WaitForRoot());
+    }
+
+    void notRagdoll()
+    {
+        foreach(ChildParts ot in parts)
+        {
+            if(ot.followTarget.isColObj)
+            {
+               
+                ot.followTarget.snapToTarget();
+                //ot.transform.rotation = Quaternion.Euler(0, angleBetween + ot.yRotOffset, 0);
+            }
+        }
     }
 
     //IEnumerator WaitForRoot() {
@@ -106,13 +135,11 @@ public class RagdollPhysics : MonoBehaviour
 }
 //BUGS{
 //collide with parented boxcollider while in rag [fixed]
-//revert needs a desired rot,scale,pos to blend to after ragdoll []
+//doesnt lerp after ragdoll []
 //Hinge not behaving correctly []
 //proper hinge angular limitations []
 //use the planet's normal to find the up( transform.position - closestplanet.transform.position) []
-//old model works "YAY", no it doesnt. 
-//Use script to have model follow box col obj when in rag doll and reverse when it aint ragdolling
-//
+//need to have Y rotation be the same as the original
 //}
 
 /*

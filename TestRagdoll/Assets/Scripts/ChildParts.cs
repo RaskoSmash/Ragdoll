@@ -133,17 +133,22 @@ public class TransformData
     public void Apply(Transform current)
     {
         // change da dada
-        current.localRotation = Quaternion.Lerp(current.localRotation, desiredRot,.01f);
+        current.localRotation = Quaternion.Lerp(current.localRotation, desiredRot,2f * Time.deltaTime);
+        current.localPosition = Vector3.Lerp(current.localPosition, desiredPos, 2f * Time.deltaTime);
+        current.localScale = desiredScale;
     }
 }
 
 public class ChildParts : MonoBehaviour
 {
-    public Transform originalT;
+    public bool isColObj;
     public Rigidbody2D rbody;
     new public BoxCollider2D collider;
     public HingeJoint2D dist;
     private TransformData tdata;
+    public FollowTarget followTarget;
+    public Quaternion OriginalRot;
+    public float yRotOffset;
 
     private bool haveDist;
     public bool checkForDist;
@@ -155,6 +160,9 @@ public class ChildParts : MonoBehaviour
         dist = GetComponent<HingeJoint2D>();
         rbody = GetComponent<Rigidbody2D>();
         collider = GetComponent<BoxCollider2D>();
+        followTarget = GetComponent<FollowTarget>();
+        OriginalRot = transform.localRotation;
+        yRotOffset = Mathf.DeltaAngle(0, transform.rotation.y);
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -170,53 +178,102 @@ public class ChildParts : MonoBehaviour
         //I need a way to still collide with self but not the master parent
         if (col.gameObject.CompareTag("Player"))
         {
-            Debug.Log(col.gameObject.name);
             Physics2D.IgnoreCollision(collider, col.collider);
         }
     }
 
     public void SetEnabled(bool isActive)
     {
-        if (isActive)
+        if(isActive)
         {
-            haveDist = transform.parent.GetComponent<RagdollPhysics>() == null;
-            tdata = new TransformData(transform);
-            if (checkForRigidbody)
+            if (followTarget.isColObj)
             {
-                rbody = GetComponent<Rigidbody2D>();
-                if (rbody == null)
-                    rbody = gameObject.AddComponent<Rigidbody2D>();
-            }
-            if (checkForDist && haveDist)
-            {
-                dist = GetComponent<HingeJoint2D>();
-                if (dist == null)
+                haveDist = transform.parent.GetComponent<RagdollPhysics>() == null;
+                if (checkForRigidbody)
                 {
-                    dist = gameObject.AddComponent<HingeJoint2D>();
-                    dist.connectedBody = dist.transform.parent.GetComponent<Rigidbody2D>();
-                    dist.connectedAnchor = transform.localPosition;
+                    rbody = GetComponent<Rigidbody2D>();
+                    if (rbody == null)
+                        rbody = gameObject.AddComponent<Rigidbody2D>();
                 }
+                if (checkForDist && haveDist)
+                {
+                    dist = GetComponent<HingeJoint2D>();
+                    if (dist == null)
+                    {
+                        dist = gameObject.AddComponent<HingeJoint2D>();
+                        dist.connectedBody = dist.transform.parent.GetComponent<Rigidbody2D>();
+                        dist.connectedAnchor = transform.localPosition;
+                    }
+                }
+                collider.enabled = true;
+                rbody.isKinematic = false;
+
+                //if (haveDist)
+                //{
+                //    dist.enabled = true;
+                //}
             }
-            //if (haveDist)
-            //{
-            //    dist.enabled = true;
-            //}
-            collider.enabled = true;
-            rbody.isKinematic = false;
+            else
+            {
+                tdata = new TransformData(transform);
+            }
         }
         else
         {
-            //if (haveDist)
-            //    dist.enabled = false;
-
-            collider.enabled = false;
-            rbody.isKinematic = true;
-
+            if (followTarget.isColObj)
+            {
+                Destroy(dist);
+                collider.enabled = false;
+                rbody.isKinematic = true;
+            }
+            else
+            {
+                tdata.Apply(transform);
+            }
             checkForDist = false;
             checkForCollider = false;
             checkForRigidbody = false;
-            tdata.Apply(transform);
         }
+        //if (isActive)
+        //{
+        //    haveDist = transform.parent.GetComponent<RagdollPhysics>() == null;
+        //    tdata = new TransformData(transform);
+        //    if (checkForRigidbody)
+        //    {
+        //        rbody = GetComponent<Rigidbody2D>();
+        //        if (rbody == null)
+        //            rbody = gameObject.AddComponent<Rigidbody2D>();
+        //    }
+        //    if (checkForDist && haveDist)
+        //    {
+        //        dist = GetComponent<HingeJoint2D>();
+        //        if (dist == null)
+        //        {
+        //            dist = gameObject.AddComponent<HingeJoint2D>();
+        //            dist.connectedBody = dist.transform.parent.GetComponent<Rigidbody2D>();
+        //            dist.connectedAnchor = transform.localPosition;
+        //        }
+        //    }
+        //    //if (haveDist)
+        //    //{
+        //    //    dist.enabled = true;
+        //    //}
+        //    collider.enabled = true;
+        //    rbody.isKinematic = false;
+        //}
+        //else
+        //{
+        //    //if (haveDist)
+        //    //    dist.enabled = false;
+
+        //    collider.enabled = false;
+        //    rbody.isKinematic = true;
+
+        //    checkForDist = false;
+        //    checkForCollider = false;
+        //    checkForRigidbody = false;
+        //    tdata.Apply(transform);
+        //}
     }
 
     #region CommentedCode
